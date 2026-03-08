@@ -17,10 +17,13 @@ mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('MongoDB conectado'))
   .catch(err => console.log('Error de MongoDB:', err));
 
-// Cargar swagger
-const swaggerPath = path.join(process.cwd(), 'swagger.yaml');
-const swaggerDocument = YAML.load(swaggerPath);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+const swaggerPath = path.resolve(__dirname, 'swagger.yaml');
+try {
+    const swaggerDocument = YAML.load(swaggerPath);
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+} catch (error) {
+    console.error("Error cargando swagger.yaml:", error);
+}
 
 // Rutas
 app.use('/api/v1/hola', require('./api/v1/hola'));

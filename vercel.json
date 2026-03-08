@@ -1,7 +1,14 @@
 {
+  "version": 2,
   "functions": {
-    "api/*.js": {
+    "server.js": {
       "includeFiles": "swagger.yaml"
     }
-  }
+  },
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "server.js"
+    }
+  ]
 }
