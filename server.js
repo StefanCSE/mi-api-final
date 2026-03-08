@@ -18,7 +18,8 @@ mongoose.connect(process.env.MONGODB_URI)
   .catch(err => console.log('Error de MongoDB:', err));
 
 // Cargar swagger
-const swaggerDocument = YAML.load('./swagger.yaml');
+const swaggerPath = path.join(process.cwd(), 'swagger.yaml');
+const swaggerDocument = YAML.load(swaggerPath);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Rutas
@@ -31,7 +32,7 @@ app.get('/', (req, res) => {
   res.json({ mensaje: 'API funcionando correctamente' });
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en puerto ${PORT}`);
 });
