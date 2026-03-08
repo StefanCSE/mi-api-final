@@ -1,7 +1,7 @@
 {
   "name": "mi-api-final",
   "version": "1.0.0",
-  "description": "Proyecto Final Musk Mod 7",
+  "description": "Proyecto Final - Musk Mod 7",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
