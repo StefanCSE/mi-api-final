@@ -1,0 +1,90 @@
+openapi: 3.0.0
+info:
+  title: Mi API Final
+  description: API REST con Express, MongoDB y JWT
+  version: 1.0.0
+  contact:
+    name: Stefan
+    email: stefankeyboard2002@gmail.com
+
+servers:
+  - url: http://localhost:3001/api/v1
+    description: Servidor Local
+  - url: https://mi-api-final.vercel.app/api/v1
+    description: Servidor Vercel
+
+paths:
+  /hola:
+    get:
+      summary: Endpoint basico
+      tags:
+        - General
+      responses:
+        '200':
+          description: Mensaje de bienvenida
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                  status:
+                    type: string
+
+  /saludo/{nombre}:
+    get:
+      summary: Saludo personalizado
+      tags:
+        - General
+      parameters:
+        - name: nombre
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Saludo con nombre
+
+  /login:
+    post:
+      summary: Login de usuario
+      tags:
+        - Autenticacion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                contrasenya:
+                  type: string
+      responses:
+        '200':
+          description: Login exitoso con token
+        '401':
+          description: Credenciales invalidas
+
+  /usuarios:
+    get:
+      summary: Obtener lista de usuarios
+      tags:
+        - Usuarios
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Lista de usuarios
+        '401':
+          description: Token no valido
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
