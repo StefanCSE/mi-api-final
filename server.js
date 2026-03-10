@@ -18,13 +18,52 @@ mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('MongoDB conexion exitosa'))
   .catch(err => console.log('Error de MongoDB:', err));
 
-const swaggerPath = path.join(__dirname, 'swagger.yaml');
+let swaggerDocument;
 try {
-    const swaggerDocument = YAML.load(swaggerPath);
-    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-} catch (error) {
-    console.error("Error cargando swagger.yaml:", error);
+    const swaggerPath = path.resolve(process.cwd(), 'swagger.yaml');
+    swaggerDocument = YAML.load(swaggerPath);
+} catch (e) {
+    console.error("No se pudo cargar swagger.yaml:", e.message);
 }
+
+app.get('/api-docs', (req, res) => {
+  if (!swaggerDocument) {
+    return res.status(500).send("Error: No se pudo cargar el archivo swagger.yaml");
+  }
+
+  const html = `
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <title>Mi API Aventura</title>
+      <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui.css" />
+    </head>
+    <body>
+      <div id="swagger-ui"></div>
+      <script src="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-bundle.js" charset="UTF-8"></script>
+      <script src="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-standalone-preset.js" charset="UTF-8"></script>
+      <script>
+        window.onload = () => {
+          window.ui = SwaggerUIBundle({
+            spec: ${JSON.stringify(swaggerDocument)},
+            dom_id: '#swagger-ui',
+            presets: [
+              SwaggerUIBundle.presets.apis,
+              SwaggerUIStandalonePreset
+            ],
+            layout: "StandaloneLayout",
+          });
+        };
+      </script>
+    </body>
+    </html>
+  `;
+
+  res.setHeader('Content-Type', 'text/html');
+  res.status(200).send(html);
+});
 
 // Rutas
 app.use('/api/v1/hola', require('./api/v1/hola'));
