@@ -37,7 +37,7 @@ app.get('/api-docs', (req, res) => {
     <head>
       <meta charset="utf-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <title>Mi API Aventura</title>
+      <title>Mi API Final</title>
       <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui.css" />
     </head>
     <body>
@@ -66,14 +66,25 @@ app.get('/api-docs', (req, res) => {
 });
 
 // Rutas
+app.get('/', (req, res) => {
+    res.json({
+        mensaje: 'Bienvenido a mi API',
+        version: '1.0.0',
+        endpoints: [
+            '/api/v1/hola',
+            '/api/v1/saludo?nombre=TuNombre',
+            '/api/v1/usuarios',
+            '/api/v1/login',
+            '/api/v1/usuarios-protegido'
+        ]
+    });
+});
+
+// 4. Definición de Rutas de la API
 app.use('/api/v1/hola', require('./api/v1/hola'));
 app.use('/api/v1/saludo', require('./api/v1/saludo'));
 app.use('/api/v1/usuarios', require('./api/v1/usuarios'));
 app.use('/api/v1/login', require('./api/v1/login'));
-
-app.get('/', (req, res) => {
-  res.json({ mensaje: 'API funcionando correctamente' });
-});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
