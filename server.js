@@ -17,7 +17,7 @@ mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('MongoDB conectado'))
   .catch(err => console.log('Error de MongoDB:', err));
 
-const swaggerPath = path.resolve(__dirname, 'swagger.yaml');
+const swaggerPath = path.join(__dirname, 'swagger.yaml');
 try {
     const swaggerDocument = YAML.load(swaggerPath);
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
