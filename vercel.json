@@ -2,7 +2,7 @@
   "version": 2,
   "functions": {
     "server.js": {
-      "includeFiles": "swagger.yaml"
+      "includeFiles": "swagger.yaml,api/**,models/**,middleware/**"
     }
   },
   "routes": [

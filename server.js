@@ -4,7 +4,6 @@ const dotenv = require('dotenv');
 const YAML = require('yamljs');
 const path = require('path');
 
-// 1. IMPORTAR RUTAS (Hazlo aquí arriba para evitar errores de undefined)
 const holaRoutes = require('./api/v1/hola');
 const saludoRoutes = require('./api/v1/saludo');
 const usuariosRoutes = require('./api/v1/usuarios');
@@ -18,12 +17,42 @@ const app = express();
 // Middleware
 app.use(express.json());
 
-// Conectar a MongoDB
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('MongoDB conexion exitosa'))
-  .catch(err => console.log('Error de MongoDB:', err));
+// Conexion MongoDB
+let isConnected = false;
 
-// Configuración de Swagger
+async function connectDB() {
+  if (isConnected) return;
+  if (mongoose.connection.readyState === 1) {
+    isConnected = true;
+    return;
+  }
+  try {
+    await mongoose.connect(process.env.MONGODB_URI, {
+      serverSelectionTimeoutMS: 5000,
+    });
+    isConnected = true;
+    console.log('MongoDB conexion exitosa');
+  } catch (err) {
+    console.error('Error de MongoDB:', err.message);
+    throw err;
+  }
+}
+
+// Middleware que conecta a MongoDB antes de cada request que lo necesite
+app.use(async (req, res, next) => {
+  const rutasSinDB = ['/', '/api-docs', '/api/v1/hola'];
+  const necesitaDB = !rutasSinDB.some(r => req.path === r) && !req.path.startsWith('/api/v1/saludo');
+  if (necesitaDB) {
+    try {
+      await connectDB();
+    } catch (err) {
+      return res.status(500).json({ error: 'Error de conexion a la base de datos', detalle: err.message });
+    }
+  }
+  next();
+});
+
+// Configuracion de Swagger
 let swaggerDocument;
 try {
     const swaggerPath = path.resolve(process.cwd(), 'swagger.yaml');
@@ -32,7 +61,7 @@ try {
     console.error("No se pudo cargar swagger.yaml:", e.message);
 }
 
-// Endpoint de documentación
+// Endpoint de documentacion
 app.get('/api-docs', (req, res) => {
   if (!swaggerDocument) return res.status(500).send("Error cargando swagger.yaml");
   
@@ -61,7 +90,7 @@ app.get('/api-docs', (req, res) => {
   res.send(html);
 });
 
-// 2. USO DE RUTAS
+// Uso de rutas
 app.use('/api/v1/hola', holaRoutes);
 app.use('/api/v1/saludo', saludoRoutes);
 app.use('/api/v1/usuarios', usuariosRoutes);
@@ -81,11 +110,4 @@ app.get('/', (req, res) => {
   });
 });
 
-// Exportar para Vercel
 module.exports = app;
-
-// Solo escuchar si no estamos en Vercel
-if (process.env.NODE_ENV !== 'production') {
-    const PORT = process.env.PORT || 3000;
-    app.listen(PORT, () => console.log(`Servidor en puerto ${PORT}`));
-}
