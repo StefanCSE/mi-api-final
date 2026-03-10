@@ -69,9 +69,9 @@ app.get('/api-docs', (req, res) => {
 
 // Rutas
 app.use('/api/v1/hola', require('./api/v1/hola'));
-app.use('/api/v1/saludo', require('./api/v1/saludo'));
-app.use('/api/v1/usuarios', require('./api/v1/usuarios'));
-app.use('/api/v1/login', require('./api/v1/login'));
+//app.use('/api/v1/saludo', require('./api/v1/saludo'));
+//app.use('/api/v1/usuarios', require('./api/v1/usuarios'));
+//app.use('/api/v1/login', require('./api/v1/login'));
 
 app.get('/', (req, res) => {
   res.json({ mensaje: 'API funcionando correctamente' });

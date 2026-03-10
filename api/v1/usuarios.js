@@ -46,7 +46,7 @@ router.post('/', async (req, res) => {
 // GET para obtener todos los usuarios (protegido con JWT)
 router.get('/', verificarToken, async (req, res) => {
   try {
-    const usuarios = await Usuario.find().select('-contraseña');
+    const usuarios = await Usuario.find().select('-contrasena');
     res.json({
       status: 'ok',
       usuarios: usuarios
