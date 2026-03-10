@@ -15,7 +15,7 @@ app.use(express.json());
 
 // Conectar a mongodb
 mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('MongoDB conectado'))
+  .then(() => console.log('MongoDB conexion exitosa'))
   .catch(err => console.log('Error de MongoDB:', err));
 
 const swaggerPath = path.join(__dirname, 'swagger.yaml');
