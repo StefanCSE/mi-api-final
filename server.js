@@ -96,7 +96,7 @@ app.use('/api/v1/saludo', saludoRoutes);
 app.use('/api/v1/usuarios', usuariosRoutes);
 app.use('/api/v1/login', loginRoutes);
 
-// Ruta principal (copiada de tu versión funcional)
+// Ruta principal
 app.get('/', (req, res) => {
   res.json({
     mensaje: 'Bienvenido a mi API - Funcionando correctamente',
