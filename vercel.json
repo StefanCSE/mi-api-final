@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/docs.js": {
+      "includeFiles": "swagger.yaml"
+    }
+  }
+}

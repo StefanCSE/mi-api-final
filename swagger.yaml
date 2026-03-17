@@ -1,0 +1,180 @@
+openapi: 3.0.0
+info:
+  title: Mi API final
+  description: API RESTful completa con autenticacion JWT y MongoDB
+  version: 1.0.0
+  contact:
+    name: Stefan
+    email: stefankeyboard2002@gmail.com
+
+servers:
+  - url: https://mi-api-final.vercel.app
+    description: Api
+
+paths:
+  /api/v1/hola:
+    get:
+      summary: Mensaje de bienvenida
+      description: Retorna un mensaje de bienvenida simple
+      tags:
+        - General
+      responses:
+        '200':
+          description: Respuesta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                    example: Bienvenido a la version 1 de nuestra API!
+
+  /api/v1/saludo:
+    get:
+      summary: Saludo personalizado
+      description: Retorna un saludo personalizado con el nombre proporcionado
+      tags:
+        - General
+      parameters:
+        - name: nombre
+          in: query
+          required: true
+          description: Nombre de la persona a saludar
+          schema:
+            type: string
+            example: Stefan
+      responses:
+        '200':
+          description: Saludo exitoso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                    example: Hola, Stefan!
+        '400':
+          description: Parametro nombre faltante
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  ejemplo:
+                    type: string
+
+  /api/v1/usuarios:
+    get:
+      summary: Obtener todos los usuarios
+      description: Retorna la lista de usuarios desde MongoDB
+      tags:
+        - Usuarios
+      responses:
+        '200':
+          description: Lista de usuarios
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  exitoso:
+                    type: boolean
+                  cantidad:
+                    type: integer
+                  usuarios:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        nombre:
+                          type: string
+                        email:
+                          type: string
+                        edad:
+                          type: integer
+        '500':
+          description: Error del servidor
+
+  /api/v1/login:
+    post:
+      summary: Iniciar sesion
+      description: Autentica al usuario y retorna un token JWT
+      tags:
+        - Autenticacion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                usuario:
+                  type: string
+                  example: admin
+                contrasena:
+                  type: string
+                  example: "1234"
+      responses:
+        '200':
+          description: Login exitoso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  exitoso:
+                    type: boolean
+                  mensaje:
+                    type: string
+                  token:
+                    type: string
+                  usuario:
+                    type: string
+        '401':
+          description: Credenciales invalidas
+        '400':
+          description: Datos faltantes
+
+  /api/v1/usuarios-protegido:
+    get:
+      summary: Obtener datos protegidos
+      description: Endpoint que requiere autenticacion JWT
+      tags:
+        - Autenticacion
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Acceso permitido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                  usuario:
+                    type: string
+                  datosProtegidos:
+                    type: object
+        '401':
+          description: No autorizado - token invalido o faltante
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+tags:
+  - name: General
+    description: Endpoints generales
+  - name: Usuarios
+    description: Gestion de usuarios
+  - name: Autenticacion
+    description: Login y autorizacion
